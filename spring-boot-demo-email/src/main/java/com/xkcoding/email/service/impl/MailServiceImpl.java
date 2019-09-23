@@ -67,14 +67,7 @@ public class MailServiceImpl implements MailService {
     @Override
     public void sendHtmlMail(String to, String subject, String content, String... cc) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setFrom(from);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(content, true);
-        if (ArrayUtil.isNotEmpty(cc)) {
-            helper.setCc(cc);
-        }
+        MimeMessageHelper helper = this.getMimeMessageHelperInstance(to, subject, content,cc);
         mailSender.send(message);
     }
 
@@ -92,16 +85,9 @@ public class MailServiceImpl implements MailService {
     public void sendAttachmentsMail(String to, String subject, String content, String filePath, String... cc) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setFrom(from);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(content, true);
-        if (ArrayUtil.isNotEmpty(cc)) {
-            helper.setCc(cc);
-        }
+        MimeMessageHelper helper = this.getMimeMessageHelperInstance(to, subject, content,cc);
         FileSystemResource file = new FileSystemResource(new File(filePath));
-        String fileName = filePath.substring(filePath.lastIndexOf(File.separator));
+        String fileName = filePath.substring(filePath.lastIndexOf("/"));
         helper.addAttachment(fileName, file);
 
         mailSender.send(message);
@@ -122,10 +108,7 @@ public class MailServiceImpl implements MailService {
     public void sendResourceMail(String to, String subject, String content, String rscPath, String rscId, String... cc) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setFrom(from);
-        helper.setTo(to);
-        helper.setSubject(subject);
+        MimeMessageHelper helper = this.getMimeMessageHelperInstance(to, subject, content,cc);
         helper.setText(content, true);
         if (ArrayUtil.isNotEmpty(cc)) {
             helper.setCc(cc);
@@ -134,5 +117,27 @@ public class MailServiceImpl implements MailService {
         helper.addInline(rscId, res);
 
         mailSender.send(message);
+    }
+
+    /**
+     * 创建 MimeMessageHelper 实例
+     *
+     * @param to        收件人地址
+     * @param subject   邮件主题
+     * @param content   邮件内容
+     * @param cc        抄送地址
+     * @return          MimeMessageHelper 实例
+     * @throws MessagingException 邮件发送异常
+     */
+    private MimeMessageHelper getMimeMessageHelperInstance(String to, String subject,String content,String...  cc) throws MessagingException {
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true,"utf-8");
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        if (ArrayUtil.isNotEmpty(cc))  helper.setCc(cc);
+        return helper;
     }
 }
