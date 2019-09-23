@@ -4,6 +4,7 @@ spring:
     port: 994
     username: 15345510962@163.com
     password: zhch199308wy
+    password: ENC(OT0qGOpXrr1Iog1W+fjOiIDCJdBjHyhy)
     protocol: smtp
     test-connection: true
     default-encoding: UTF-8
@@ -12,4 +13,8 @@ spring:
       mail.smtp.starttls.enable: true
       mail.smtp.starttls.required: true
       mail.smtp.ssl.enable: true
-      mail.display.sendmail: xkcoding
+      mail.display.sendmail: spring-boot-demo
+# 为 jasypt 配置解密秘钥
+jasypt:
+  encryptor:
+    password: spring-boot-demo
