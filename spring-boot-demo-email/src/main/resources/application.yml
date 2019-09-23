@@ -1,9 +1,9 @@
 spring:
   mail:
-    host: smtp.yeah.net
+    host: smtp.163.com
     port: 994
-    username: hutool@yeah.net
-    password: q1w2e3
+    username: 15345510962@163.com
+    password: zhch199308wy
     protocol: smtp
     test-connection: true
     default-encoding: UTF-8
