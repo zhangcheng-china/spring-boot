@@ -46,7 +46,7 @@ public class RedisCacheUtilTest extends SpringBootDemoCacheRedisApplicationTests
 
     @Test
     public void getCacheObject() {
-        LinkedHashMap maps =  (LinkedHashMap)redisCacheUtil.getCacheObject("zhang::cheng");
+        LinkedHashMap maps =  (LinkedHashMap)redisCacheUtil.getCacheObject("zhang::cheng",User.class);
         User user = JSONUtil.toBean(JSONUtil.toJsonStr(maps),User.class);
         log.info("userId:{} userName:{}", user.getId(),user.getName());
     }
