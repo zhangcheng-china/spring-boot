@@ -10,6 +10,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 import javax.mail.MessagingException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -38,7 +39,7 @@ public class MailServiceTest extends SpringBootDemoEmailApplicationTests {
      */
     @Test
     public void sendSimpleMail() {
-        mailService.sendSimpleMail("237497819@qq.com", "这是一封简单邮件", "这是一封普通的SpringBoot测试邮件");
+        mailService.sendSimpleMail("zhangchemg@gmail.com", "这是一封简单邮件", "这是一封普通的SpringBoot测试邮件");
     }
 
     /**
@@ -50,11 +51,11 @@ public class MailServiceTest extends SpringBootDemoEmailApplicationTests {
     public void sendHtmlMail() throws MessagingException {
         Context context = new Context();
         context.setVariable("project", "Spring Boot Demo");
-        context.setVariable("author", "Yangkai.Shen");
-        context.setVariable("url", "https://github.com/xkcoding/spring-boot-demo");
+        context.setVariable("author", "zhangcheng");
+        context.setVariable("url", " https://github.com/zhangcheng340123/spring-boot");
 
         String emailTemplate = templateEngine.process("welcome", context);
-        mailService.sendHtmlMail("237497819@qq.com", "这是一封模板HTML邮件", emailTemplate);
+        mailService.sendHtmlMail("zhangchemg@gmail.com", "这是一封模板HTML邮件", emailTemplate);
     }
 
     /**
@@ -65,21 +66,22 @@ public class MailServiceTest extends SpringBootDemoEmailApplicationTests {
     @Test
     public void sendHtmlMail2() throws MessagingException {
 
+        //设置自定义的 Thymeleaf 模板引擎
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(context);
         templateResolver.setCacheable(false);
         templateResolver.setPrefix("classpath:/email/");
         templateResolver.setSuffix(".html");
-
+        //设置当前的 Thymeleaf 模板引擎
         templateEngine.setTemplateResolver(templateResolver);
 
         Context context = new Context();
         context.setVariable("project", "Spring Boot Demo");
-        context.setVariable("author", "Yangkai.Shen");
-        context.setVariable("url", "https://github.com/xkcoding/spring-boot-demo");
+        context.setVariable("author", "zhangcheng");
+        context.setVariable("url", " https://github.com/zhangcheng340123/spring-boot");
 
         String emailTemplate = templateEngine.process("test", context);
-        mailService.sendHtmlMail("237497819@qq.com", "这是一封模板HTML邮件", emailTemplate);
+        mailService.sendHtmlMail("zhangchemg@gmail.com", "这是一封模板HTML邮件", emailTemplate);
     }
 
     /**
@@ -88,9 +90,10 @@ public class MailServiceTest extends SpringBootDemoEmailApplicationTests {
      * @throws MessagingException 邮件异常
      */
     @Test
-    public void sendAttachmentsMail() throws MessagingException {
+    public void sendAttachmentsMail() throws MessagingException, URISyntaxException {
         URL resource = ResourceUtil.getResource("static/xkcoding.png");
-        mailService.sendAttachmentsMail("237497819@qq.com", "这是一封带附件的邮件", "邮件中有附件，请注意查收！", resource.getPath());
+        String filePath = resource.toURI().getPath().substring(1 );
+        mailService.sendAttachmentsMail("554489692@qq.com", "这是一封带附件的邮件", "邮件中有附件，请注意查收！", filePath);
     }
 
     /**
@@ -99,10 +102,11 @@ public class MailServiceTest extends SpringBootDemoEmailApplicationTests {
      * @throws MessagingException 邮件异常
      */
     @Test
-    public void sendResourceMail() throws MessagingException {
+    public void sendResourceMail() throws MessagingException, URISyntaxException {
         String rscId = "xkcoding";
         String content = "<html><body>这是带静态资源的邮件<br/><img src=\'cid:" + rscId + "\' ></body></html>";
         URL resource = ResourceUtil.getResource("static/xkcoding.png");
-        mailService.sendResourceMail("237497819@qq.com", "这是一封带静态资源的邮件", content, resource.getPath(), rscId);
+        String filePath = resource.toURI().getPath().substring(1);
+        mailService.sendResourceMail("zhangchemg@gmail.com", "这是一封带静态资源的邮件", content, filePath, rscId);
     }
 }

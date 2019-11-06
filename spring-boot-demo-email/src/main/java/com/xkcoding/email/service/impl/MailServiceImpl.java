@@ -5,6 +5,7 @@ import com.xkcoding.email.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * <p>
@@ -43,7 +46,8 @@ public class MailServiceImpl implements MailService {
      * @param cc      抄送地址
      */
     @Override
-    public void sendSimpleMail(String to, String subject, String content, String... cc) {
+    public void sendSimpleMail(String to, String subject, String content, String... cc) throws MailException {
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(to);
@@ -66,9 +70,9 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public void sendHtmlMail(String to, String subject, String content, String... cc) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = this.getMimeMessageHelperInstance(to, subject, content,cc);
-        mailSender.send(message);
+        mailSender.send(helper.getMimeMessage());
+
     }
 
     /**
@@ -83,14 +87,18 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public void sendAttachmentsMail(String to, String subject, String content, String filePath, String... cc) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
 
+        if (!new File(filePath).exists()) {
+            throw new MessagingException("当前文件不存在。");
+        }
+        if (Files.isDirectory(Paths.get(filePath)) ) {
+            throw new MessagingException("上传的文件不能为目录。");
+        }
         MimeMessageHelper helper = this.getMimeMessageHelperInstance(to, subject, content,cc);
         FileSystemResource file = new FileSystemResource(new File(filePath));
         String fileName = filePath.substring(filePath.lastIndexOf("/"));
         helper.addAttachment(fileName, file);
-
-        mailSender.send(message);
+        mailSender.send(helper.getMimeMessage());
     }
 
     /**

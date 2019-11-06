@@ -2,7 +2,7 @@
 FROM openjdk:8-jdk-alpine
 
 # 作者信息
-MAINTAINER "Yangkai.Shen 237497819@qq.com"
+MAINTAINER "zhangcheng zhangchemg@gmail.com"
 
 # 添加一个存储空间
 VOLUME /tmp
@@ -14,7 +14,7 @@ EXPOSE 8080
 ARG JAR_FILE=target/spring-boot-demo-docker.jar
 
 # 往容器中添加jar包
-ADD ${JAR_FILE} app.jar
+ADD target/spring-boot-demo-docker.jar app.jar
 
 # 启动镜像自动运行程序
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/urandom","-jar","/app.jar"]
+ENTRYPOINT   ["java","-Djava.security.egd=file:/dev/urandom","-jar","/app.jar"]

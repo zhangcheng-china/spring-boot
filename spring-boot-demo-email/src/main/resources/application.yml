@@ -4,7 +4,6 @@ spring:
     port: 994
     username: 15345510962@163.com
     password: zhch199308wy
-    password: ENC(OT0qGOpXrr1Iog1W+fjOiIDCJdBjHyhy)
     protocol: smtp
     test-connection: true
     default-encoding: UTF-8

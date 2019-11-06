@@ -1,5 +1,8 @@
 package com.xkcoding.cache.redis.util;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -62,7 +65,7 @@ public class RedisCacheUtil<T> {
 
     public  ValueOperations<String, T> setCacheObject(String key, T value, Integer timeout, TimeUnit timeUnit) {
         ValueOperations<String, T> operation = redisTemplate.opsForValue();
-        operation.set(key, value, timeout, timeUnit);
+         operation.set(key, value, timeout, timeUnit);
         return operation;
     }
 
@@ -72,9 +75,14 @@ public class RedisCacheUtil<T> {
      * @param key 缓存键值
      * @return 缓存键值对应的数据
      */
-    public Serializable getCacheObject(String key) {
-        ValueOperations<String, Serializable> operation = redisTemplate.opsForValue();
-        return operation.get(key);
+    public T getCacheObject(String key,Class<T> type) throws RuntimeException {
+        ValueOperations<String, Object> operation = redisTemplate.opsForValue();
+        Object objects =  operation.get(key);
+       if(objects instanceof LinkedHashMap) {
+            return JSONUtil.toBean(JSONUtil.parseObj(objects),type);
+        } else {
+            throw new RuntimeException("无法映射到指定的class类型");
+        }
     }
 
     /**
@@ -119,16 +127,14 @@ public class RedisCacheUtil<T> {
      * @param key 缓存的键值
      * @return 缓存键值对应的数据
      */
-    public  List<T> getCacheList(String key) {
-        List<T> dataList = new ArrayList<T>();
-        ListOperations<String, T> listOperation = redisTemplate.opsForList();
-        Long size = listOperation.size(key);
-
-        if (size== null)  size = 0L;
-        for (int i = 0; i < size; i++) {
-            dataList.add(listOperation.index(key, i));
+    public  List<T> getCacheList(String key,Class<T> type) {
+        ValueOperations<String, Object> operation = redisTemplate.opsForValue();
+        Object objects =  operation.get(key);
+        if(objects instanceof ArrayList) {
+            return JSONUtil.toList(JSONUtil.parseArray(objects),type);
+        } else {
+            throw new RuntimeException("无法映射到指定的class类型");
         }
-        return dataList;
     }
 
     /**
